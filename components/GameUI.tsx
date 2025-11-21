@@ -100,8 +100,8 @@ export const GameButton: React.FC<ButtonProps> = ({ onClick, label, color, disab
         ${disabled ? 'opacity-60 cursor-not-allowed active:border-b-4 active:border-t-0 active:translate-y-0 grayscale filter contrast-75' : ''}
       `}
     >
-      <span className="text-lg md:text-2xl tracking-wide leading-none drop-shadow-sm font-vt323 uppercase">{label}</span>
-      {subLabel && <span className="hidden sm:inline text-[10px] text-white/90 font-normal leading-none mt-0.5 tracking-tighter">{subLabel}</span>}
+      <span className="text-base sm:text-lg md:text-xl lg:text-2xl tracking-wide leading-none drop-shadow-sm font-vt323 uppercase">{label}</span>
+      {subLabel && <span className="hidden sm:inline text-[9px] sm:text-[10px] text-white/90 font-normal leading-none mt-0.5 tracking-tighter">{subLabel}</span>}
     </button>
   );
 };

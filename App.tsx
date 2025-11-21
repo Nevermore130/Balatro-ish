@@ -268,7 +268,11 @@ export default function App() {
 
   return (
     <div className="fixed inset-0 bg-slate-900 flex items-center justify-center overflow-hidden relative crt font-vt323"
-         style={{ padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' }}>
+         style={{ 
+           padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)',
+           height: '100dvh', // Dynamic viewport height for mobile, falls back to 100vh
+           width: '100dvw', // Dynamic viewport width for mobile, falls back to 100vw
+         }}>
       
       {/* 横屏提示遮罩 - 仅在移动设备竖屏时显示 */}
       {!isLandscape && isMobile && (
@@ -365,15 +369,17 @@ export default function App() {
       )}
 
       {/* Main Game Container */}
-      <div className="w-full h-full flex flex-col md:flex-row p-1 md:p-2 lg:p-3 gap-2 relative z-10"
+      <div className="w-full h-full flex flex-col sm:flex-row p-1 sm:p-1.5 md:p-2 lg:p-3 gap-1 sm:gap-1.5 md:gap-2 relative z-10"
            style={{ 
-             maxWidth: '100vw',
-             maxHeight: '100vh',
+             width: '100%',
+             height: '100%',
+             maxWidth: '100dvw',
+             maxHeight: '100dvh',
            }}>
         
         {/* LEFT PANEL: Stats */}
-        {/* Fixed width on md to save space for landscape play area */}
-        <div className="w-full md:w-56 lg:w-64 xl:w-72 flex-shrink-0 flex flex-col gap-1 overflow-y-auto no-scrollbar">
+        {/* Fixed width optimized for iPhone 15 landscape (2.17:1 aspect ratio) */}
+        <div className="w-full sm:w-48 md:w-56 lg:w-64 xl:w-72 flex-shrink-0 flex flex-col gap-1 overflow-y-auto no-scrollbar h-full">
           
           {/* Blind Info */}
           <div className="pixel-info-box bg-blue-600 p-1 text-white relative overflow-hidden">
@@ -448,15 +454,15 @@ export default function App() {
         </div>
 
         {/* RIGHT PANEL: Play Area */}
-        <div className="flex-grow bg-[#355c46] rounded-xl border-4 sm:border-8 border-slate-700 relative shadow-2xl flex flex-col overflow-hidden min-w-0">
+        <div className="flex-grow bg-[#355c46] rounded-xl border-4 sm:border-8 border-slate-700 relative shadow-2xl flex flex-col overflow-hidden min-w-0 h-full">
             
             {/* Pattern Overlay */}
             <div className="absolute inset-0 opacity-10 pointer-events-none" 
                  style={{backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
 
             {/* TOP JOKER RACK */}
-            {/* Compact height for mobile landscape */}
-            <div className="h-16 sm:h-24 md:h-32 w-full flex items-center justify-center gap-1 sm:gap-2 p-1 border-b-4 border-black/20 bg-black/10 flex-shrink-0">
+            {/* Optimized for iPhone 15 landscape aspect ratio */}
+            <div className="h-14 sm:h-16 md:h-20 lg:h-24 xl:h-28 w-full flex items-center justify-center gap-1 sm:gap-1.5 md:gap-2 p-0.5 sm:p-1 border-b-4 border-black/20 bg-black/10 flex-shrink-0">
                 {gameState.jokers.length === 0 && <div className="text-white/20 text-xs sm:text-sm">{t('gallery.title')} ({t('common.empty', { defaultValue: 'Empty' })})</div>}
                 {gameState.jokers.map((joker) => (
                     <JokerCard key={joker.id} joker={joker} />
@@ -464,43 +470,43 @@ export default function App() {
             </div>
 
             {/* Play Info (Predicted Score) - "Select up related area" */}
-            <div className="h-8 sm:h-14 md:h-20 flex items-center justify-center gap-2 sm:gap-8 bg-black/20 p-0.5 sm:p-1 relative z-0 flex-shrink-0">
+            <div className="h-7 sm:h-10 md:h-14 lg:h-16 flex items-center justify-center gap-1.5 sm:gap-4 md:gap-6 lg:gap-8 bg-black/20 p-0.5 sm:p-1 relative z-0 flex-shrink-0">
                 {gameState.selectedCardIds.length > 0 ? (
                     <>
-                        <div className="bg-blue-600 text-white px-2 py-0.5 rounded border-2 border-blue-400 shadow-lg hidden sm:block">
-                             <div className="text-[10px] uppercase">{t('scoring.handType', { defaultValue: 'Hand Type' })}</div>
-                             <div className="text-sm md:text-xl font-bold">{t(`hands.${currentHandEvaluation.name}`)}</div>
+                        <div className="bg-blue-600 text-white px-1.5 sm:px-2 py-0.5 rounded border-2 border-blue-400 shadow-lg hidden sm:block">
+                             <div className="text-[9px] sm:text-[10px] uppercase">{t('scoring.handType', { defaultValue: 'Hand Type' })}</div>
+                             <div className="text-xs sm:text-sm md:text-lg lg:text-xl font-bold">{t(`hands.${currentHandEvaluation.name}`)}</div>
                         </div>
                         {/* Small screen only hand name */}
-                         <div className="sm:hidden text-white font-bold text-xs mr-2 whitespace-nowrap">{t(`hands.${currentHandEvaluation.name}`)}</div>
+                         <div className="sm:hidden text-white font-bold text-[10px] sm:text-xs mr-1 sm:mr-2 whitespace-nowrap">{t(`hands.${currentHandEvaluation.name}`)}</div>
 
-                        <div className="flex items-center gap-1 sm:gap-2">
+                        <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
                             {/* Chips */}
-                            <div className="bg-white text-blue-900 font-bold text-sm sm:text-xl md:text-2xl px-1 sm:px-2 py-0.5 rounded-l border-2 border-r-0 border-slate-400 flex flex-col items-center leading-none">
+                            <div className="bg-white text-blue-900 font-bold text-xs sm:text-base md:text-xl lg:text-2xl px-0.5 sm:px-1 md:px-2 py-0.5 rounded-l border-2 border-r-0 border-slate-400 flex flex-col items-center leading-none">
                                 <span>
                                     {(currentProjectedScore as any).details?.baseChips + (currentProjectedScore as any).details?.cardChips + (currentProjectedScore as any).details?.bonusChips}
                                 </span>
-                                <span className="text-[6px] sm:text-[10px] text-slate-500">{t('scoring.chips').toUpperCase()}</span>
+                                <span className="text-[5px] sm:text-[6px] md:text-[8px] lg:text-[10px] text-slate-500">{t('scoring.chips').toUpperCase()}</span>
                             </div>
                             {/* Mult */}
-                            <div className="bg-red-500 text-white font-bold text-sm sm:text-xl md:text-2xl px-1 sm:px-2 py-0.5 rounded-r border-2 border-l-0 border-slate-400 flex flex-col items-center leading-none">
+                            <div className="bg-red-500 text-white font-bold text-xs sm:text-base md:text-xl lg:text-2xl px-0.5 sm:px-1 md:px-2 py-0.5 rounded-r border-2 border-l-0 border-slate-400 flex flex-col items-center leading-none">
                                 <span>
                                    {((currentProjectedScore as any).details?.baseMult + (currentProjectedScore as any).details?.bonusMult) * (currentProjectedScore as any).details?.xMult}
                                 </span>
-                                <span className="text-[6px] sm:text-[10px] text-red-200">{t('scoring.mult').toUpperCase()}</span>
+                                <span className="text-[5px] sm:text-[6px] md:text-[8px] lg:text-[10px] text-red-200">{t('scoring.mult').toUpperCase()}</span>
                             </div>
                         </div>
-                        <div className="text-yellow-300 font-bold text-sm sm:text-xl drop-shadow-md ml-2">
+                        <div className="text-yellow-300 font-bold text-xs sm:text-sm md:text-lg lg:text-xl drop-shadow-md ml-1 sm:ml-2">
                             = {(currentProjectedScore as any).total}
                         </div>
                     </>
                 ) : (
-                    <div className="text-white/50 text-xs md:text-lg italic">{t('game.selectUpTo')}</div>
+                    <div className="text-white/50 text-[10px] sm:text-xs md:text-base lg:text-lg italic">{t('game.selectUpTo')}</div>
                 )}
             </div>
 
             {/* Card Area */}
-            <div className="flex-grow flex items-center justify-center p-1 sm:p-4 overflow-visible relative min-h-[120px] z-10 pt-4">
+            <div className="flex-grow flex items-center justify-center p-0.5 sm:p-2 md:p-4 overflow-visible relative min-h-[100px] sm:min-h-[120px] z-10 pt-2 sm:pt-3 md:pt-4">
                 <div className="flex justify-center items-center -space-x-2 sm:-space-x-3 w-full">
                     <AnimatePresence mode='popLayout'>
                         {gameState.hand.map((card, index) => (
@@ -525,25 +531,26 @@ export default function App() {
             </div>
 
             {/* Action Bar */}
-            <div className="bg-slate-900/95 p-1 flex items-center gap-1 md:gap-2 border-t-2 border-slate-700 relative z-30 flex-shrink-0 h-12 md:h-14 backdrop-blur-sm shadow-[0_-4px_6px_rgba(0,0,0,0.3)]">
+            <div className="bg-slate-900/95 p-0.5 sm:p-1 flex items-center gap-0.5 sm:gap-1 md:gap-2 border-t-2 border-slate-700 relative z-30 flex-shrink-0 h-11 sm:h-12 md:h-14 lg:h-16 backdrop-blur-sm shadow-[0_-4px_6px_rgba(0,0,0,0.3)]">
                 
-                <div className="flex gap-1 md:gap-2 h-full items-center px-1">
-                    <button onClick={() => handleSort('rank')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">{t('buttons.rank')}</button>
-                    <button onClick={() => handleSort('suit')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">{t('buttons.suit')}</button>
+                <div className="flex gap-0.5 sm:gap-1 md:gap-2 h-full items-center px-0.5 sm:px-1">
+                    <button onClick={() => handleSort('rank')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-1.5 sm:px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-xs sm:text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">{t('buttons.rank')}</button>
+                    <button onClick={() => handleSort('suit')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-1.5 sm:px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-xs sm:text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">{t('buttons.suit')}</button>
                 </div>
 
                 <div className="flex-grow"></div>
 
-                <div className="flex gap-1 md:gap-2 h-full items-center pr-1">
-                    <div className="w-20 sm:w-28 h-5/6">
+                <div className="flex gap-0.5 sm:gap-1 md:gap-2 h-full items-center pr-0.5 sm:pr-1">
+                    <div className="w-16 sm:w-20 md:w-28 h-5/6">
                         <GameButton 
                             label={t('buttons.discard')} 
                             color="red" 
                             onClick={handleDiscard} 
                             disabled={gameState.selectedCardIds.length === 0 || gameState.discardsRemaining === 0}
+                            subLabel={`-$${1}`} 
                         />
                     </div>
-                    <div className="w-24 sm:w-36 h-5/6">
+                    <div className="w-20 sm:w-24 md:w-36 h-5/6">
                         <GameButton 
                             label={t('buttons.playHand')} 
                             color="orange" 
