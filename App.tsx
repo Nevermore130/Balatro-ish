@@ -3,7 +3,7 @@ import { createDeck, getRandomJokers, JOKER_DEFINITIONS } from './constants';
 import { CardData, GameState, JokerInstance, JokerDefinition } from './types';
 import Card from './components/Card';
 import JokerCard from './components/JokerCard';
-import { StatBox, GameButton, RetroStat } from './components/GameUI';
+import { GameButton, RetroStat } from './components/GameUI';
 import { evaluateHand, calculateScore } from './utils/pokerLogic';
 import { getJokerAdvice } from './services/geminiService';
 import { AnimatePresence } from 'framer-motion';
@@ -308,7 +308,7 @@ export default function App() {
 
            {/* Ante & Round */}
            <div className="grid grid-cols-2 gap-2">
-             <RetroStat label="Ante" value={gameState.ante} subValue="/ 8" type="orange" />
+             <RetroStat label="Ante" value={`${gameState.ante}`} subValue="/ 8" type="orange" />
              <RetroStat label="Round" value={gameState.round} type="orange" />
           </div>
 
@@ -407,17 +407,17 @@ export default function App() {
             </div>
 
             {/* Action Bar */}
-            <div className="bg-slate-900/95 p-1 flex items-center gap-2 border-t-2 border-slate-700 relative z-30 flex-shrink-0 h-12 md:h-16 backdrop-blur-sm shadow-[0_-4px_6px_rgba(0,0,0,0.3)]">
+            <div className="bg-slate-900/95 p-1 flex items-center gap-1 md:gap-2 border-t-2 border-slate-700 relative z-30 flex-shrink-0 h-12 md:h-14 backdrop-blur-sm shadow-[0_-4px_6px_rgba(0,0,0,0.3)]">
                 
-                <div className="flex gap-1 md:gap-2 w-auto h-full items-center">
-                    <button onClick={() => handleSort('rank')} className="h-full bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 md:px-5 rounded-sm border-b-4 border-slate-900 active:border-b-0 active:border-t-4 active:scale-95 transition-all text-lg md:text-xl font-bold uppercase tracking-wider font-vt323 shadow-md">Rank</button>
-                    <button onClick={() => handleSort('suit')} className="h-full bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 md:px-5 rounded-sm border-b-4 border-slate-900 active:border-b-0 active:border-t-4 active:scale-95 transition-all text-lg md:text-xl font-bold uppercase tracking-wider font-vt323 shadow-md">Suit</button>
+                <div className="flex gap-1 md:gap-2 h-full items-center px-1">
+                    <button onClick={() => handleSort('rank')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">Rank</button>
+                    <button onClick={() => handleSort('suit')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">Suit</button>
                 </div>
 
                 <div className="flex-grow"></div>
 
-                <div className="flex gap-1 md:gap-2 h-full items-center">
-                    <div className="w-20 sm:w-32 h-full">
+                <div className="flex gap-1 md:gap-2 h-full items-center pr-1">
+                    <div className="w-20 sm:w-28 h-5/6">
                         <GameButton 
                             label="Discard" 
                             color="red" 
@@ -426,7 +426,7 @@ export default function App() {
                             subLabel={`-$${1}`} 
                         />
                     </div>
-                    <div className="w-24 sm:w-40 h-full">
+                    <div className="w-24 sm:w-36 h-5/6">
                         <GameButton 
                             label="Play Hand" 
                             color="orange" 

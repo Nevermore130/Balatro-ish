@@ -73,10 +73,10 @@ interface ButtonProps {
 
 export const GameButton: React.FC<ButtonProps> = ({ onClick, label, color, disabled, subLabel }) => {
   const colorMap = {
-    blue: 'bg-blue-600 hover:bg-blue-500 text-white border-blue-900',
-    orange: 'bg-orange-600 hover:bg-orange-500 text-white border-orange-900',
-    red: 'bg-red-600 hover:bg-red-500 text-white border-red-900',
-    gray: 'bg-slate-600 hover:bg-slate-500 text-slate-200 border-slate-900',
+    blue: 'bg-blue-600 hover:bg-blue-500 text-white border-blue-800',
+    orange: 'bg-orange-600 hover:bg-orange-500 text-white border-orange-800',
+    red: 'bg-red-600 hover:bg-red-500 text-white border-red-800',
+    gray: 'bg-slate-600 hover:bg-slate-500 text-slate-200 border-slate-800',
   };
 
   return (
@@ -86,18 +86,18 @@ export const GameButton: React.FC<ButtonProps> = ({ onClick, label, color, disab
       className={`
         ${colorMap[color]}
         font-bold 
-        px-1 md:px-2
-        rounded-sm md:rounded
+        px-2 md:px-4
+        rounded-[4px]
         border-b-4 border-r-2 border-l-2 border-t-0
-        active:border-b-0 active:border-t-4 active:scale-95
+        active:border-b-0 active:border-t-4 active:translate-y-1
         transition-all w-full h-full relative
         flex flex-col items-center justify-center
-        shadow-lg
-        ${disabled ? 'opacity-50 cursor-not-allowed active:border-b-4 active:border-t-0 active:scale-100 grayscale filter contrast-75' : ''}
+        shadow-md
+        ${disabled ? 'opacity-60 cursor-not-allowed active:border-b-4 active:border-t-0 active:translate-y-0 grayscale filter contrast-75' : ''}
       `}
     >
-      <span className="text-base md:text-xl tracking-wide leading-none drop-shadow-sm font-vt323 uppercase transform scale-y-110">{label}</span>
-      {subLabel && <span className="hidden sm:inline text-[10px] text-white/90 font-normal leading-none mt-0.5">{subLabel}</span>}
+      <span className="text-lg md:text-2xl tracking-wide leading-none drop-shadow-sm font-vt323 uppercase">{label}</span>
+      {subLabel && <span className="hidden sm:inline text-[10px] text-white/90 font-normal leading-none mt-0.5 tracking-tighter">{subLabel}</span>}
     </button>
   );
 };

@@ -35,6 +35,15 @@ export interface PokerHandResult {
   cards: CardData[]; // The cards forming the hand
 }
 
+export type JokerPattern = 'stripes' | 'dots' | 'checkers' | 'diamonds' | 'grid' | 'solid';
+
+export interface JokerVisualStyle {
+    bgColor: string;     // CSS Hex or Name
+    patternColor: string; // CSS Hex or Name
+    pattern: JokerPattern;
+    icon: string;
+}
+
 export interface JokerDefinition {
   id: string;
   name: string;
@@ -43,6 +52,7 @@ export interface JokerDefinition {
   cost: number;
   // Used for filtering or UI hints
   type: 'passive' | 'on_play'; 
+  visualStyle: JokerVisualStyle;
 }
 
 export interface JokerInstance {

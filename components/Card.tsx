@@ -57,8 +57,8 @@ const Card: React.FC<CardProps> = ({ card, selected, onClick, disabled, index })
       }}
       transition={{ 
         type: "spring", 
-        stiffness: 300, 
-        damping: 20,
+        stiffness: 400, 
+        damping: 25,
         mass: 0.8
       }}
       whileHover={{ 

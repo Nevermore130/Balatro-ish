@@ -63,18 +63,54 @@ export const HAND_SCORES = {
 };
 
 export const JOKER_DEFINITIONS: Record<string, JokerDefinition> = {
-  'joker': { id: 'joker', name: 'Joker', description: '+4 Mult', rarity: 'Common', cost: 2, type: 'passive' },
-  'big_chip': { id: 'big_chip', name: 'Big Chip', description: '+25 Chips', rarity: 'Common', cost: 3, type: 'passive' },
-  'greedy_joker': { id: 'greedy_joker', name: 'Greedy Joker', description: 'Played cards with Diamond suit give +4 Mult when scored', rarity: 'Common', cost: 4, type: 'on_play' },
-  'lusty_joker': { id: 'lusty_joker', name: 'Lusty Joker', description: 'Played cards with Heart suit give +4 Mult when scored', rarity: 'Common', cost: 4, type: 'on_play' },
-  'wrathful_joker': { id: 'wrathful_joker', name: 'Wrathful Joker', description: 'Played cards with Spade suit give +4 Mult when scored', rarity: 'Common', cost: 4, type: 'on_play' },
-  'gluttonous_joker': { id: 'gluttonous_joker', name: 'Gluttonous Joker', description: 'Played cards with Club suit give +4 Mult when scored', rarity: 'Common', cost: 4, type: 'on_play' },
-  'even_steven': { id: 'even_steven', name: 'Even Steven', description: '+4 Mult for each even rank card played (10, 8, 6, 4, 2)', rarity: 'Uncommon', cost: 5, type: 'on_play' },
-  'odd_todd': { id: 'odd_todd', name: 'Odd Todd', description: '+30 Chips for each odd rank card played (A, 9, 7, 5, 3)', rarity: 'Uncommon', cost: 5, type: 'on_play' },
-  'the_duo': { id: 'the_duo', name: 'The Duo', description: 'X2 Mult if played hand contains a Pair', rarity: 'Rare', cost: 7, type: 'passive' },
-  'the_trio': { id: 'the_trio', name: 'The Trio', description: 'X3 Mult if played hand contains a Three of a Kind', rarity: 'Rare', cost: 7, type: 'passive' },
-  'cavendish': { id: 'cavendish', name: 'Cavendish', description: 'X3 Mult', rarity: 'Rare', cost: 8, type: 'passive' },
-  'blue_joker': { id: 'blue_joker', name: 'Blue Joker', description: '+2 Chips for every remaining card in deck', rarity: 'Common', cost: 5, type: 'passive' },
+  'joker': { 
+    id: 'joker', name: 'Joker', description: '+4 Mult', rarity: 'Common', cost: 2, type: 'passive',
+    visualStyle: { bgColor: '#4b5563', patternColor: '#6b7280', pattern: 'stripes', icon: '🤡' }
+  },
+  'big_chip': { 
+    id: 'big_chip', name: 'Big Chip', description: '+25 Chips', rarity: 'Common', cost: 3, type: 'passive',
+    visualStyle: { bgColor: '#1e3a8a', patternColor: '#3b82f6', pattern: 'grid', icon: '🔵' }
+  },
+  'greedy_joker': { 
+    id: 'greedy_joker', name: 'Greedy Joker', description: 'Diamonds give +4 Mult', rarity: 'Common', cost: 4, type: 'on_play',
+    visualStyle: { bgColor: '#7c2d12', patternColor: '#f97316', pattern: 'diamonds', icon: '💎' }
+  },
+  'lusty_joker': { 
+    id: 'lusty_joker', name: 'Lusty Joker', description: 'Hearts give +4 Mult', rarity: 'Common', cost: 4, type: 'on_play',
+    visualStyle: { bgColor: '#7f1d1d', patternColor: '#ef4444', pattern: 'dots', icon: '♥️' }
+  },
+  'wrathful_joker': { 
+    id: 'wrathful_joker', name: 'Wrathful Joker', description: 'Spades give +4 Mult', rarity: 'Common', cost: 4, type: 'on_play',
+    visualStyle: { bgColor: '#111827', patternColor: '#4b5563', pattern: 'checkers', icon: '♠️' }
+  },
+  'gluttonous_joker': { 
+    id: 'gluttonous_joker', name: 'Gluttonous Joker', description: 'Clubs give +4 Mult', rarity: 'Common', cost: 4, type: 'on_play',
+    visualStyle: { bgColor: '#14532d', patternColor: '#22c55e', pattern: 'grid', icon: '♣️' }
+  },
+  'even_steven': { 
+    id: 'even_steven', name: 'Even Steven', description: '+4 Mult for even cards', rarity: 'Uncommon', cost: 5, type: 'on_play',
+    visualStyle: { bgColor: '#312e81', patternColor: '#818cf8', pattern: 'stripes', icon: '2️⃣' }
+  },
+  'odd_todd': { 
+    id: 'odd_todd', name: 'Odd Todd', description: '+30 Chips for odd cards', rarity: 'Uncommon', cost: 5, type: 'on_play',
+    visualStyle: { bgColor: '#854d0e', patternColor: '#facc15', pattern: 'dots', icon: '9️⃣' }
+  },
+  'the_duo': { 
+    id: 'the_duo', name: 'The Duo', description: 'X2 Mult for Pair', rarity: 'Rare', cost: 7, type: 'passive',
+    visualStyle: { bgColor: '#831843', patternColor: '#ec4899', pattern: 'checkers', icon: '✌️' }
+  },
+  'the_trio': { 
+    id: 'the_trio', name: 'The Trio', description: 'X3 Mult for 3-of-a-Kind', rarity: 'Rare', cost: 7, type: 'passive',
+    visualStyle: { bgColor: '#581c87', patternColor: '#a855f7', pattern: 'diamonds', icon: '🤟' }
+  },
+  'cavendish': { 
+    id: 'cavendish', name: 'Cavendish', description: 'X3 Mult', rarity: 'Rare', cost: 8, type: 'passive',
+    visualStyle: { bgColor: '#fcd34d', patternColor: '#fbbf24', pattern: 'dots', icon: '🍌' }
+  },
+  'blue_joker': { 
+    id: 'blue_joker', name: 'Blue Joker', description: '+Chips per remaining card', rarity: 'Common', cost: 5, type: 'passive',
+    visualStyle: { bgColor: '#172554', patternColor: '#60a5fa', pattern: 'stripes', icon: '📘' }
+  },
 };
 
 export const createDeck = (): CardData[] => {
