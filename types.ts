@@ -41,7 +41,7 @@ export interface JokerVisualStyle {
     bgColor: string;     // CSS Hex or Name
     patternColor: string; // CSS Hex or Name
     pattern: JokerPattern;
-    icon: string;
+    imagePath?: string; // Optional path to a local image resource
 }
 
 export interface JokerDefinition {

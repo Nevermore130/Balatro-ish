@@ -8,14 +8,14 @@ interface JokerCardProps {
   inShop?: boolean;
 }
 
-const JokerCard: React.FC<JokerCardProps> = ({ joker, onClick, inShop }) => {
-  const [isHovered, setIsHovered] = useState(false);
+const JokerCard: React.FC<JokerCardProps> = ({ joker, inShop }) => {
+  const [showInfo, setShowInfo] = useState(false);
 
   // Handle both Instance and Definition (Shop uses Definition)
   const defId = 'defId' in joker ? joker.defId : joker.id;
   const def = JOKER_DEFINITIONS[defId] || joker as JokerDefinition;
   // Fallback if visualStyle is missing
-  const visualStyle = def.visualStyle || { bgColor: '#4b5563', patternColor: '#374151', pattern: 'solid', icon: '🃏' };
+  const visualStyle = def.visualStyle || { bgColor: '#4b5563', patternColor: '#374151', pattern: 'solid' };
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -30,8 +30,22 @@ const JokerCard: React.FC<JokerCardProps> = ({ joker, onClick, inShop }) => {
 
   // Generate Background Pattern Style using SVG data URIs for crisp retro look
   const bgStyle = useMemo(() => {
-    const { bgColor, patternColor, pattern } = visualStyle;
+    const { bgColor, patternColor, pattern, imagePath } = visualStyle;
     
+    let cssStyle: React.CSSProperties = {
+      backgroundColor: bgColor, // Fallback
+      backgroundSize: '20px 20px',
+      backgroundRepeat: 'repeat',
+    };
+
+    if (imagePath) {
+      cssStyle.backgroundImage = `url(${imagePath})`;
+      cssStyle.backgroundSize = 'cover';
+      cssStyle.backgroundPosition = 'center';
+      cssStyle.backgroundRepeat = 'no-repeat';
+      return cssStyle;
+    }
+
     // Helper to create SVG data URI with embedded background color
     const createPattern = (svgPath: string, size: number = 20) => {
       const svgContent = `
@@ -41,12 +55,6 @@ const JokerCard: React.FC<JokerCardProps> = ({ joker, onClick, inShop }) => {
         </svg>
       `.trim();
       return `url("data:image/svg+xml,${encodeURIComponent(svgContent)}")`;
-    };
-
-    let cssStyle: React.CSSProperties = {
-      backgroundColor: bgColor, // Fallback
-      backgroundSize: '20px 20px',
-      backgroundRepeat: 'repeat',
     };
 
     switch (pattern) {
@@ -92,9 +100,7 @@ const JokerCard: React.FC<JokerCardProps> = ({ joker, onClick, inShop }) => {
 
   return (
     <div 
-        onClick={onClick}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => setShowInfo(!showInfo)}
         className={`
             relative flex flex-col items-center justify-center text-center
             border-4 
@@ -123,7 +129,8 @@ const JokerCard: React.FC<JokerCardProps> = ({ joker, onClick, inShop }) => {
             }}>
        </div>
 
-      {/* Art/Icon Container */}
+      {/* Art/Icon Container - Removed as per icon property removal */}
+      {/* 
       <div className={`
         relative z-10
         ${inShop ? 'w-16 h-16 sm:w-20 sm:h-20 mb-2' : 'w-8 h-8 sm:w-10 sm:h-10 mb-1'}
@@ -138,26 +145,11 @@ const JokerCard: React.FC<JokerCardProps> = ({ joker, onClick, inShop }) => {
             {visualStyle.icon}
         </span>
       </div>
+      */}
 
-      {/* Name Label */}
-      <div className={`
-        relative z-10
-        font-bold text-white uppercase leading-none tracking-wider
-        bg-slate-900/80 px-1.5 py-1 rounded-[2px]
-        border border-black/30
-        font-vt323
-        ${inShop ? 'text-xs sm:text-sm mb-1' : 'text-[8px] sm:text-[10px] max-w-full truncate'}
-        text-shadow-sm
-      `}>
-        {def.name}
-      </div>
-
-      {/* Description (Shop Only) */}
-      {inShop && (
-         <div className="relative z-10 text-[10px] sm:text-xs text-blue-50 font-bold leading-tight mt-1 hidden sm:block bg-slate-900/70 p-1 rounded border border-white/5 text-center font-vt323 w-full">
-            {def.description}
-         </div>
-      )}
+      {/* Name Label - REMOVED as per request */}
+      
+      {/* Description (Shop Only) - REMOVED as per request */}
       
       {/* Price Tag (Shop Only) */}
       {inShop && (
@@ -176,9 +168,9 @@ const JokerCard: React.FC<JokerCardProps> = ({ joker, onClick, inShop }) => {
          </div>
       )}
 
-      {/* Tooltip (Play Area Only) */}
-      {!inShop && isHovered && (
-          <div className="absolute bottom-full mb-2 w-40 bg-slate-900 border-2 rounded p-2 z-[60] pointer-events-none shadow-xl left-1/2 transform -translate-x-1/2" 
+      {/* Tooltip (Click to toggle) */}
+      {showInfo && (
+          <div className="absolute bottom-full mb-2 w-40 bg-slate-900 border-2 rounded p-2 z-[100] pointer-events-none shadow-xl left-1/2 transform -translate-x-1/2" 
                style={{ borderColor: rarityColor }}>
               <div className="flex flex-col gap-1">
                   <div className="font-bold text-base uppercase text-center font-vt323" style={{ color: rarityColor }}>{def.name}</div>

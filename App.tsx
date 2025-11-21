@@ -7,6 +7,7 @@ import { GameButton, RetroStat } from './components/GameUI';
 import { evaluateHand, calculateScore } from './utils/pokerLogic';
 import { getJokerAdvice } from './services/geminiService';
 import { AnimatePresence } from 'framer-motion';
+import TestJokerShop from './TestJokerShop';
 
 const INITIAL_HAND_SIZE = 8;
 const MAX_SELECTED = 5;
@@ -14,6 +15,7 @@ const MAX_JOKERS = 5;
 
 export default function App() {
   // --- State ---
+  const [showTestShop, setShowTestShop] = useState(false);
   const [gameState, setGameState] = useState<GameState>({
     deck: [],
     hand: [],
@@ -213,10 +215,24 @@ export default function App() {
   };
 
   // --- Render ---
+  if (showTestShop) {
+    return <TestJokerShop onBack={() => setShowTestShop(false)} />;
+  }
+
   return (
     <div className="fixed inset-0 bg-slate-900 flex items-center justify-center overflow-hidden relative crt font-vt323"
          style={{ padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' }}>
       
+      {/* Dev Mode: Test Shop Button */}
+      {import.meta.env.DEV && (
+        <button 
+          onClick={() => setShowTestShop(true)}
+          className="absolute top-1 left-1 z-[100] text-[10px] bg-red-900/50 text-white px-2 py-1 rounded border border-red-500/50 hover:bg-red-900"
+        >
+          Dev: Shop Test
+        </button>
+      )}
+
       {/* Shop Overlay */}
       {gameState.gamePhase === 'SHOP' && (
           <div className="absolute inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
@@ -229,7 +245,6 @@ export default function App() {
                         <JokerCard 
                             joker={option} 
                             inShop={true} 
-                            onClick={() => buyJoker(option)} 
                         />
                         <button 
                             onClick={() => buyJoker(option)}

@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  balatro-ish:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+    container_name: balatro-ish
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+    networks:
+      - balatro-network
+
+networks:
+  balatro-network:
+    driver: bridge
+

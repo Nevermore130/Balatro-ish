@@ -1,0 +1,33 @@
+# 依赖目录
+node_modules
+npm-debug.log
+
+# 构建产物
+dist
+build
+
+# 环境变量文件
+.env
+.env.local
+.env.*.local
+
+# Git 相关
+.git
+.gitignore
+
+# IDE 相关
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# 测试相关
+coverage
+.nyc_output
+
+# 其他
+.DS_Store
+*.log
+README.md
+
