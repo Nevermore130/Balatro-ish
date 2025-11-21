@@ -70,11 +70,11 @@ export const JOKER_DEFINITIONS: Record<string, JokerDefinition> = {
   // },
   'joker': { 
     id: 'joker', name: 'Joker', description: '+4 Mult', rarity: 'Common', cost: 2, type: 'passive',
-    visualStyle: { bgColor: '#4b5563', patternColor: '#6b7280', pattern: 'stripes', imagePath: '/images/jokers/joker_card.jpeg' }
+    visualStyle: { bgColor: '#4b5563', patternColor: '#6b7280', pattern: 'stripes', imagePath: '/images/jokers/joker_card.png' }
   },
   'big_chip': { 
     id: 'big_chip', name: 'Big Chip', description: '+25 Chips', rarity: 'Common', cost: 3, type: 'passive',
-    visualStyle: { bgColor: '#1e3a8a', patternColor: '#3b82f6', pattern: 'grid', imagePath: '/images/jokers/big_chip_card.jpeg' }
+    visualStyle: { bgColor: '#1e3a8a', patternColor: '#3b82f6', pattern: 'grid', imagePath: '/images/jokers/big_chip_card.png' }
   },
   'greedy_joker': { 
     id: 'greedy_joker', name: 'Greedy Joker', description: 'Diamonds give +4 Mult', rarity: 'Common', cost: 4, type: 'on_play',
@@ -86,35 +86,35 @@ export const JOKER_DEFINITIONS: Record<string, JokerDefinition> = {
   },
   'wrathful_joker': { 
     id: 'wrathful_joker', name: 'Wrathful Joker', description: 'Spades give +4 Mult', rarity: 'Common', cost: 4, type: 'on_play',
-    visualStyle: { bgColor: '#111827', patternColor: '#4b5563', pattern: 'checkers', imagePath: '/images/jokers/holographic_card.png' }
+    visualStyle: { bgColor: '#111827', patternColor: '#4b5563', pattern: 'checkers', imagePath: '/images/jokers/wrathful_joker_card.png' }
   },
   'gluttonous_joker': { 
     id: 'gluttonous_joker', name: 'Gluttonous Joker', description: 'Clubs give +4 Mult', rarity: 'Common', cost: 4, type: 'on_play',
-    visualStyle: { bgColor: '#14532d', patternColor: '#22c55e', pattern: 'grid', imagePath: '/images/jokers/holographic_card.png' }
+    visualStyle: { bgColor: '#14532d', patternColor: '#22c55e', pattern: 'grid', imagePath: '/images/jokers/gluttonous_joker.png' }
   },
   'even_steven': { 
     id: 'even_steven', name: 'Even Steven', description: '+4 Mult for even cards', rarity: 'Uncommon', cost: 5, type: 'on_play',
-    visualStyle: { bgColor: '#312e81', patternColor: '#818cf8', pattern: 'stripes', imagePath: '/images/jokers/holographic_card.png' }
+    visualStyle: { bgColor: '#312e81', patternColor: '#818cf8', pattern: 'stripes', imagePath: '/images/jokers/even_steven_card.png' }
   },
   'odd_todd': { 
     id: 'odd_todd', name: 'Odd Todd', description: '+30 Chips for odd cards', rarity: 'Uncommon', cost: 5, type: 'on_play',
-    visualStyle: { bgColor: '#854d0e', patternColor: '#facc15', pattern: 'dots', imagePath: '/images/jokers/holographic_card.png' }
+    visualStyle: { bgColor: '#854d0e', patternColor: '#facc15', pattern: 'dots', imagePath: '/images/jokers/odd_todd_card.png' }
   },
   'the_duo': { 
     id: 'the_duo', name: 'The Duo', description: 'X2 Mult for Pair', rarity: 'Rare', cost: 7, type: 'passive',
-    visualStyle: { bgColor: '#831843', patternColor: '#ec4899', pattern: 'checkers', imagePath: '/images/jokers/holographic_card.png' }
+    visualStyle: { bgColor: '#831843', patternColor: '#ec4899', pattern: 'checkers', imagePath: '/images/jokers/the_duo_card.png' }
   },
   'the_trio': { 
     id: 'the_trio', name: 'The Trio', description: 'X3 Mult for 3-of-a-Kind', rarity: 'Rare', cost: 7, type: 'passive',
-    visualStyle: { bgColor: '#581c87', patternColor: '#a855f7', pattern: 'diamonds', imagePath: '/images/jokers/holographic_card.png' }
+    visualStyle: { bgColor: '#581c87', patternColor: '#a855f7', pattern: 'diamonds', imagePath: '/images/jokers/the_trio_card.png' }
   },
   'cavendish': { 
     id: 'cavendish', name: 'Cavendish', description: 'X3 Mult', rarity: 'Rare', cost: 8, type: 'passive',
-    visualStyle: { bgColor: '#fcd34d', patternColor: '#fbbf24', pattern: 'dots', imagePath: '/images/jokers/holographic_card.png' }
+    visualStyle: { bgColor: '#fcd34d', patternColor: '#fbbf24', pattern: 'dots', imagePath: '/images/jokers/cavendish_card.png' }
   },
   'blue_joker': { 
     id: 'blue_joker', name: 'Blue Joker', description: '+Chips per remaining card', rarity: 'Common', cost: 5, type: 'passive',
-    visualStyle: { bgColor: '#172554', patternColor: '#60a5fa', pattern: 'stripes', imagePath: '/images/jokers/holographic_card.png' }
+    visualStyle: { bgColor: '#172554', patternColor: '#60a5fa', pattern: 'stripes', imagePath: '/images/jokers/blue_joker_card.png' }
   },
 };
 

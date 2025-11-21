@@ -5,17 +5,25 @@ import Card from './components/Card';
 import JokerCard from './components/JokerCard';
 import { GameButton, RetroStat } from './components/GameUI';
 import { evaluateHand, calculateScore } from './utils/pokerLogic';
-import { getJokerAdvice } from './services/geminiService';
 import { AnimatePresence } from 'framer-motion';
 import TestJokerShop from './TestJokerShop';
+import JokerGallery from './components/JokerGallery';
+import ScoringRules from './components/ScoringRules';
+import { useLanguage } from './contexts/LanguageContext';
 
 const INITIAL_HAND_SIZE = 8;
 const MAX_SELECTED = 5;
 const MAX_JOKERS = 5;
 
 export default function App() {
+  const { t, language, setLanguage } = useLanguage();
+  
   // --- State ---
   const [showTestShop, setShowTestShop] = useState(false);
+  const [showJokerGallery, setShowJokerGallery] = useState(false);
+  const [showScoringRules, setShowScoringRules] = useState(false);
+  const [isLandscape, setIsLandscape] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [gameState, setGameState] = useState<GameState>({
     deck: [],
     hand: [],
@@ -31,8 +39,7 @@ export default function App() {
     handsRemaining: 4,
     discardsRemaining: 3,
     money: 4,
-    jokerMessage: "Select cards to play.",
-    isThinking: false,
+    jokerMessage: t('game.selectCards'),
     lastHandName: null,
     lastHandScore: 0,
   });
@@ -41,6 +48,43 @@ export default function App() {
   useEffect(() => {
     startNewRound(1, 300, 0);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // --- Screen Orientation Detection ---
+  useEffect(() => {
+    const checkOrientation = () => {
+      const isLandscapeMode = window.innerWidth > window.innerHeight;
+      const isMobileDevice = window.innerWidth <= 1024; // 平板和移动设备
+      setIsMobile(isMobileDevice);
+      setIsLandscape(isLandscapeMode || !isMobileDevice); // 桌面设备始终视为横屏
+      
+      // 尝试锁定横屏（如果浏览器支持且是移动设备）
+      if (isMobileDevice && screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {
+          // 锁定失败时忽略错误（某些浏览器不支持或需要用户手势）
+        });
+      }
+    };
+
+    // 初始检查
+    checkOrientation();
+
+    // 监听窗口大小变化
+    window.addEventListener('resize', checkOrientation);
+    window.addEventListener('orientationchange', checkOrientation);
+
+    // 监听屏幕方向变化（如果支持）
+    if (screen.orientation) {
+      screen.orientation.addEventListener('change', checkOrientation);
+    }
+
+    return () => {
+      window.removeEventListener('resize', checkOrientation);
+      window.removeEventListener('orientationchange', checkOrientation);
+      if (screen.orientation) {
+        screen.orientation.removeEventListener('change', checkOrientation);
+      }
+    };
   }, []);
 
   const startNewRound = (round: number, target: number, money: number, existingJokers?: JokerInstance[]) => {
@@ -62,7 +106,7 @@ export default function App() {
       discardsRemaining: 3,
       lastHandName: null,
       lastHandScore: 0,
-      jokerMessage: `Round ${round}. Target: ${target}`,
+      jokerMessage: t('game.selectCards'),
       gamePhase: 'PLAY',
       jokers: existingJokers || prev.jokers,
       shopOptions: []
@@ -129,7 +173,7 @@ export default function App() {
       selectedCardIds: [],
       discardsRemaining: prev.discardsRemaining - 1,
       money: Math.max(0, prev.money - 1),
-      jokerMessage: "Trash taken out."
+      jokerMessage: t('game.trashTakenOut')
     }));
   };
 
@@ -156,7 +200,7 @@ export default function App() {
       lastHandName: currentHandEvaluation.name,
       lastHandScore: scoreResult.total,
       lastHandDetails: scoreResult.details,
-      jokerMessage: `Played ${currentHandEvaluation.name} for ${scoreResult.total}!`
+      jokerMessage: t('game.played', { hand: t(`hands.${currentHandEvaluation.name}`), score: scoreResult.total.toString() })
     }));
 
     if (roundWon) {
@@ -164,7 +208,7 @@ export default function App() {
            openShop();
        }, 1500);
     } else if (gameState.handsRemaining - 1 <= 0 && newTotalScore < gameState.targetScore) {
-        setGameState(prev => ({...prev, gamePhase: 'GAME_OVER', jokerMessage: "GAME OVER."}));
+        setGameState(prev => ({...prev, gamePhase: 'GAME_OVER', jokerMessage: t('game.gameOver')}));
     }
   };
 
@@ -175,17 +219,17 @@ export default function App() {
           gamePhase: 'SHOP',
           shopOptions: shopItems,
           money: prev.money + 5,
-          jokerMessage: "Choose a Joker to add to your deck!"
+          jokerMessage: t('shop.chooseJoker')
       }));
   };
 
   const buyJoker = (jokerDef: JokerDefinition) => {
       if (gameState.money < jokerDef.cost) {
-          setGameState(prev => ({...prev, jokerMessage: "Too poor!"}));
+          setGameState(prev => ({...prev, jokerMessage: t('game.tooPoor')}));
           return;
       }
       if (gameState.jokers.length >= MAX_JOKERS) {
-          setGameState(prev => ({...prev, jokerMessage: "No room for more Jokers!"}));
+          setGameState(prev => ({...prev, jokerMessage: t('game.noRoomForJokers')}));
           return;
       }
 
@@ -208,36 +252,76 @@ export default function App() {
       startNewRound(nextRound, nextTarget, gameState.money, gameState.jokers);
   };
 
-  const askJoker = async () => {
-    setGameState(prev => ({ ...prev, isThinking: true, jokerMessage: "Thinking..." }));
-    const advice = await getJokerAdvice(gameState.hand, gameState.currentScore, gameState.targetScore);
-    setGameState(prev => ({ ...prev, isThinking: false, jokerMessage: advice }));
-  };
 
   // --- Render ---
   if (showTestShop) {
     return <TestJokerShop onBack={() => setShowTestShop(false)} />;
   }
 
+  if (showJokerGallery) {
+    return <JokerGallery onBack={() => setShowJokerGallery(false)} />;
+  }
+
+  if (showScoringRules) {
+    return <ScoringRules onBack={() => setShowScoringRules(false)} />;
+  }
+
   return (
     <div className="fixed inset-0 bg-slate-900 flex items-center justify-center overflow-hidden relative crt font-vt323"
          style={{ padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' }}>
       
+      {/* 横屏提示遮罩 - 仅在移动设备竖屏时显示 */}
+      {!isLandscape && isMobile && (
+        <div className="fixed inset-0 z-[9999] bg-slate-900 flex flex-col items-center justify-center gap-6 p-4">
+          <div className="text-center">
+            <div className="text-6xl mb-4 animate-bounce">📱</div>
+            <h2 className="text-3xl md:text-4xl text-white mb-4 font-bold uppercase font-vt323">{t('orientation.rotateDevice')}</h2>
+            <p className="text-xl md:text-2xl text-slate-300 font-vt323">{t('orientation.rotateDescription')}</p>
+            <p className="text-lg text-slate-400 mt-4 font-vt323">{t('orientation.rotateDescriptionEn')}</p>
+          </div>
+          <div className="animate-spin text-5xl text-green-400">↻</div>
+        </div>
+      )}
+      
+      {/* Language Switcher */}
+      <div className="absolute top-1 right-1 z-[100] flex gap-1">
+        <button
+          onClick={() => setLanguage('zh')}
+          className={`text-[10px] px-2 py-1 rounded border font-vt323 ${
+            language === 'zh' 
+              ? 'bg-blue-600 text-white border-blue-400' 
+              : 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
+          }`}
+        >
+          中文
+        </button>
+        <button
+          onClick={() => setLanguage('en')}
+          className={`text-[10px] px-2 py-1 rounded border font-vt323 ${
+            language === 'en' 
+              ? 'bg-blue-600 text-white border-blue-400' 
+              : 'bg-slate-700 text-slate-300 border-slate-600 hover:bg-slate-600'
+          }`}
+        >
+          EN
+        </button>
+      </div>
+
       {/* Dev Mode: Test Shop Button */}
       {import.meta.env.DEV && (
         <button 
           onClick={() => setShowTestShop(true)}
           className="absolute top-1 left-1 z-[100] text-[10px] bg-red-900/50 text-white px-2 py-1 rounded border border-red-500/50 hover:bg-red-900"
         >
-          Dev: Shop Test
+          {t('dev.shopTest')}
         </button>
       )}
 
       {/* Shop Overlay */}
       {gameState.gamePhase === 'SHOP' && (
           <div className="absolute inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
-              <h2 className="text-3xl md:text-4xl text-white mb-2">Round Cleared!</h2>
-              <p className="text-lg md:text-xl text-green-400 mb-6">Current Money: ${gameState.money}</p>
+              <h2 className="text-3xl md:text-4xl text-white mb-2">{t('shop.title')}</h2>
+              <p className="text-lg md:text-xl text-green-400 mb-6">{t('game.currentMoney')}: ${gameState.money}</p>
               
               <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-6">
                   {gameState.shopOptions.map(option => (
@@ -251,7 +335,7 @@ export default function App() {
                             disabled={gameState.money < option.cost}
                             className={`px-3 py-1 rounded text-sm md:text-base text-white ${gameState.money < option.cost ? 'bg-gray-600' : 'bg-green-600 hover:bg-green-500'}`}
                         >
-                            Buy ${option.cost}
+                            {t('shop.buy', { cost: option.cost })}
                         </button>
                       </div>
                   ))}
@@ -261,7 +345,7 @@ export default function App() {
                 onClick={skipShop}
                 className="px-6 py-2 md:px-8 md:py-3 bg-red-600 hover:bg-red-500 text-white rounded text-lg md:text-xl border-b-4 border-red-800 active:border-b-0 active:translate-y-1"
               >
-                  Skip Shop
+                  {t('shop.skipShop')}
               </button>
           </div>
       )}
@@ -269,51 +353,63 @@ export default function App() {
       {/* Game Over Overlay */}
       {gameState.gamePhase === 'GAME_OVER' && (
           <div className="absolute inset-0 z-50 bg-black/95 flex flex-col items-center justify-center">
-              <h1 className="text-5xl md:text-6xl text-red-600 mb-4">GAME OVER</h1>
-              <p className="text-xl md:text-2xl text-white mb-8">Reached Round {gameState.round}</p>
+              <h1 className="text-5xl md:text-6xl text-red-600 mb-4">{t('game.gameOver')}</h1>
+              <p className="text-xl md:text-2xl text-white mb-8">{t('game.reachedRound', { round: gameState.round })}</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-500"
               >
-                  Try Again
+                  {t('game.tryAgain')}
               </button>
           </div>
       )}
 
       {/* Main Game Container */}
-      <div className="w-full max-w-7xl h-full flex flex-col md:flex-row p-1 md:p-2 gap-2 relative z-10">
+      <div className="w-full h-full flex flex-col md:flex-row p-1 md:p-2 lg:p-3 gap-2 relative z-10"
+           style={{ 
+             maxWidth: '100vw',
+             maxHeight: '100vh',
+           }}>
         
         {/* LEFT PANEL: Stats */}
         {/* Fixed width on md to save space for landscape play area */}
-        <div className="w-full md:w-56 flex-shrink-0 flex flex-col gap-1 md:gap-2 overflow-y-auto no-scrollbar">
+        <div className="w-full md:w-56 lg:w-64 xl:w-72 flex-shrink-0 flex flex-col gap-1 overflow-y-auto no-scrollbar">
           
           {/* Blind Info */}
-          <div className="bg-blue-600 border-2 md:border-4 border-slate-800 rounded-xl p-1 md:p-2 shadow-lg text-white relative overflow-hidden">
+          <div className="pixel-info-box bg-blue-600 p-1 text-white relative overflow-hidden">
              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
             <div className="flex justify-between items-center relative z-10">
-              <div className="bg-red-500 rounded-xl w-10 h-10 md:w-14 md:h-14 flex items-center justify-center border-2 border-red-700 shadow-inner flex-shrink-0 transform rotate-[-2deg]">
-                <span className="text-center text-[9px] md:text-[10px] font-bold leading-tight uppercase">Small<br/>Blind</span>
+              <div className="pixel-stat-box bg-red-500 w-8 h-8 md:w-10 md:h-10 flex items-center justify-center flex-shrink-0 transform rotate-[-2deg]" style={{ clipPath: 'polygon(0 2px, 2px 2px, 2px 0, calc(100% - 2px) 0, calc(100% - 2px) 2px, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 2px calc(100% - 2px), 0 calc(100% - 2px))', boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 rgba(0, 0, 0, 0.3), 1px 1px 0px rgba(0, 0, 0, 0.3)' }}>
+                <span className="text-center text-[8px] md:text-[9px] font-bold leading-tight uppercase text-white" style={{ textShadow: '1px 1px 0px rgba(0, 0, 0, 0.5)' }}>
+                  {t('stats.smallBlind').split(' ').length > 1 ? (
+                    <>
+                      {t('stats.smallBlind').split(' ')[0]}
+                      <br/>
+                      {t('stats.smallBlind').split(' ')[1]}
+                    </>
+                  ) : t('stats.smallBlind')}
+                </span>
               </div>
               <div className="text-right overflow-hidden flex flex-col justify-center">
-                <div className="text-[9px] md:text-[11px] uppercase opacity-90 whitespace-nowrap font-bold text-blue-100">Score at least</div>
-                <div className="text-2xl md:text-4xl font-bold text-white drop-shadow-md leading-none tracking-wide">{gameState.targetScore}</div>
+                <div className="text-[8px] md:text-[9px] uppercase opacity-90 whitespace-nowrap font-bold text-blue-100" style={{ textShadow: '1px 1px 0px rgba(0, 0, 0, 0.5)' }}>{t('stats.scoreAtLeast')}</div>
+                <div className="text-xl md:text-2xl font-bold text-white leading-none tracking-wide" style={{ textShadow: '2px 2px 0px rgba(0, 0, 0, 0.6)' }}>{gameState.targetScore}</div>
               </div>
             </div>
           </div>
 
           {/* Current Score */}
-          <div className="bg-slate-800 border-2 md:border-4 border-slate-900 rounded-xl p-1 md:p-2 flex flex-row md:flex-col items-center justify-between md:justify-center gap-1 shadow-inner">
-             <div className="text-[10px] md:text-xs text-slate-400 uppercase font-bold tracking-wider">Round Score</div>
-             <div className="text-3xl md:text-4xl text-white font-bold tracking-widest drop-shadow-[0_2px_0_rgba(0,0,0,0.5)]">{gameState.currentScore}</div>
+          <div className="pixel-stat-box bg-slate-800 p-1 flex flex-row md:flex-col items-center justify-between md:justify-center gap-0.5">
+             <div className="text-[9px] md:text-[10px] text-slate-400 uppercase font-bold tracking-wider" style={{ textShadow: '1px 1px 0px rgba(0, 0, 0, 0.5)' }}>{t('stats.roundScore')}</div>
+             <div className="text-2xl md:text-3xl text-white font-bold tracking-widest" style={{ textShadow: '2px 2px 0px rgba(0, 0, 0, 0.6)' }}>{gameState.currentScore}</div>
           </div>
 
           {/* Visual Divider */}
           <div className="h-0.5 bg-slate-700/50 w-full my-0.5"></div>
 
           {/* Hand/Discard Counters (Retro Style) */}
-          <div className="grid grid-cols-2 gap-2">
-             <RetroStat label="Hands" value={gameState.handsRemaining} type="blue" />
-             <RetroStat label="Discards" value={gameState.discardsRemaining} type="red" />
+          <div className="grid grid-cols-2 gap-1">
+             <RetroStat label={t('stats.hands')} value={gameState.handsRemaining} type="blue" />
+             <RetroStat label={t('stats.discards')} value={gameState.discardsRemaining} type="red" />
           </div>
 
            {/* Money */}
@@ -322,30 +418,37 @@ export default function App() {
            </div>
 
            {/* Ante & Round */}
-           <div className="grid grid-cols-2 gap-2">
-             <RetroStat label="Ante" value={`${gameState.ante}`} subValue="/ 8" type="orange" />
-             <RetroStat label="Round" value={gameState.round} type="orange" />
+           <div className="grid grid-cols-2 gap-1">
+             <RetroStat label={t('stats.ante')} value={`${gameState.ante}`} subValue="/ 8" type="orange" />
+             <RetroStat label={t('stats.round')} value={gameState.round} type="orange" />
           </div>
 
-          {/* Joker / AI Message Area */}
-          <div className="flex-grow bg-black/40 rounded border-2 border-dashed border-slate-600 p-2 relative min-h-[60px] max-h-[150px] mt-1">
-             <div className="absolute -top-2 md:-top-3 left-2 bg-purple-600 text-white text-[10px] md:text-xs px-2 py-0.5 rounded border border-white">Joker</div>
-             <p className="text-green-400 text-xs md:text-sm leading-tight mt-2 font-sans animate-pulse">
-                 {gameState.isThinking ? "Analyzing..." : `"${gameState.jokerMessage}"`}
-             </p>
-             <button 
-                onClick={askJoker}
-                disabled={gameState.isThinking}
-                className="absolute bottom-1 right-1 bg-purple-700 hover:bg-purple-600 text-white text-[10px] px-2 py-1 rounded border border-purple-400 z-20"
-             >
-                ASK
-             </button>
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-1.5 mt-1">
+            <button
+              onClick={() => setShowJokerGallery(true)}
+              className="w-full pixel-button bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white font-bold py-2 px-3 text-sm md:text-base font-vt323 uppercase tracking-wider"
+              style={{
+                textShadow: '2px 2px 0px rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              {t('buttons.jokerGallery')}
+            </button>
+            <button
+              onClick={() => setShowScoringRules(true)}
+              className="w-full pixel-button bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold py-2 px-3 text-sm md:text-base font-vt323 uppercase tracking-wider"
+              style={{
+                textShadow: '2px 2px 0px rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              {t('buttons.scoringRules')}
+            </button>
           </div>
 
         </div>
 
         {/* RIGHT PANEL: Play Area */}
-        <div className="flex-grow bg-[#355c46] rounded-xl border-4 sm:border-8 border-slate-700 relative shadow-2xl flex flex-col overflow-hidden">
+        <div className="flex-grow bg-[#355c46] rounded-xl border-4 sm:border-8 border-slate-700 relative shadow-2xl flex flex-col overflow-hidden min-w-0">
             
             {/* Pattern Overlay */}
             <div className="absolute inset-0 opacity-10 pointer-events-none" 
@@ -354,7 +457,7 @@ export default function App() {
             {/* TOP JOKER RACK */}
             {/* Compact height for mobile landscape */}
             <div className="h-16 sm:h-24 md:h-32 w-full flex items-center justify-center gap-1 sm:gap-2 p-1 border-b-4 border-black/20 bg-black/10 flex-shrink-0">
-                {gameState.jokers.length === 0 && <div className="text-white/20 text-xs sm:text-sm">Joker Slots (Empty)</div>}
+                {gameState.jokers.length === 0 && <div className="text-white/20 text-xs sm:text-sm">{t('gallery.title')} ({t('common.empty', { defaultValue: 'Empty' })})</div>}
                 {gameState.jokers.map((joker) => (
                     <JokerCard key={joker.id} joker={joker} />
                 ))}
@@ -365,11 +468,11 @@ export default function App() {
                 {gameState.selectedCardIds.length > 0 ? (
                     <>
                         <div className="bg-blue-600 text-white px-2 py-0.5 rounded border-2 border-blue-400 shadow-lg hidden sm:block">
-                             <div className="text-[10px] uppercase">Hand Type</div>
-                             <div className="text-sm md:text-xl font-bold">{currentHandEvaluation.name}</div>
+                             <div className="text-[10px] uppercase">{t('scoring.handType', { defaultValue: 'Hand Type' })}</div>
+                             <div className="text-sm md:text-xl font-bold">{t(`hands.${currentHandEvaluation.name}`)}</div>
                         </div>
                         {/* Small screen only hand name */}
-                         <div className="sm:hidden text-white font-bold text-xs mr-2 whitespace-nowrap">{currentHandEvaluation.name}</div>
+                         <div className="sm:hidden text-white font-bold text-xs mr-2 whitespace-nowrap">{t(`hands.${currentHandEvaluation.name}`)}</div>
 
                         <div className="flex items-center gap-1 sm:gap-2">
                             {/* Chips */}
@@ -377,14 +480,14 @@ export default function App() {
                                 <span>
                                     {(currentProjectedScore as any).details?.baseChips + (currentProjectedScore as any).details?.cardChips + (currentProjectedScore as any).details?.bonusChips}
                                 </span>
-                                <span className="text-[6px] sm:text-[10px] text-slate-500">CHIPS</span>
+                                <span className="text-[6px] sm:text-[10px] text-slate-500">{t('scoring.chips').toUpperCase()}</span>
                             </div>
                             {/* Mult */}
                             <div className="bg-red-500 text-white font-bold text-sm sm:text-xl md:text-2xl px-1 sm:px-2 py-0.5 rounded-r border-2 border-l-0 border-slate-400 flex flex-col items-center leading-none">
                                 <span>
                                    {((currentProjectedScore as any).details?.baseMult + (currentProjectedScore as any).details?.bonusMult) * (currentProjectedScore as any).details?.xMult}
                                 </span>
-                                <span className="text-[6px] sm:text-[10px] text-red-200">MULT</span>
+                                <span className="text-[6px] sm:text-[10px] text-red-200">{t('scoring.mult').toUpperCase()}</span>
                             </div>
                         </div>
                         <div className="text-yellow-300 font-bold text-sm sm:text-xl drop-shadow-md ml-2">
@@ -392,7 +495,7 @@ export default function App() {
                         </div>
                     </>
                 ) : (
-                    <div className="text-white/50 text-xs md:text-lg italic">Select up to 5 cards</div>
+                    <div className="text-white/50 text-xs md:text-lg italic">{t('game.selectUpTo')}</div>
                 )}
             </div>
 
@@ -425,8 +528,8 @@ export default function App() {
             <div className="bg-slate-900/95 p-1 flex items-center gap-1 md:gap-2 border-t-2 border-slate-700 relative z-30 flex-shrink-0 h-12 md:h-14 backdrop-blur-sm shadow-[0_-4px_6px_rgba(0,0,0,0.3)]">
                 
                 <div className="flex gap-1 md:gap-2 h-full items-center px-1">
-                    <button onClick={() => handleSort('rank')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">Rank</button>
-                    <button onClick={() => handleSort('suit')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">Suit</button>
+                    <button onClick={() => handleSort('rank')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">{t('buttons.rank')}</button>
+                    <button onClick={() => handleSort('suit')} className="h-5/6 bg-slate-700 hover:bg-slate-600 text-slate-200 px-2 md:px-4 rounded-sm border-b-2 border-slate-900 active:border-b-0 active:translate-y-0.5 transition-all text-sm md:text-lg font-bold uppercase tracking-wider font-vt323 shadow-sm">{t('buttons.suit')}</button>
                 </div>
 
                 <div className="flex-grow"></div>
@@ -434,16 +537,15 @@ export default function App() {
                 <div className="flex gap-1 md:gap-2 h-full items-center pr-1">
                     <div className="w-20 sm:w-28 h-5/6">
                         <GameButton 
-                            label="Discard" 
+                            label={t('buttons.discard')} 
                             color="red" 
                             onClick={handleDiscard} 
                             disabled={gameState.selectedCardIds.length === 0 || gameState.discardsRemaining === 0}
-                            subLabel={`-$${1}`} 
                         />
                     </div>
                     <div className="w-24 sm:w-36 h-5/6">
                         <GameButton 
-                            label="Play Hand" 
+                            label={t('buttons.playHand')} 
                             color="orange" 
                             onClick={handlePlayHand} 
                             disabled={gameState.selectedCardIds.length === 0 || gameState.handsRemaining === 0}

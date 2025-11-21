@@ -41,23 +41,27 @@ export const RetroStat: React.FC<RetroStatProps> = ({ label, value, subValue, ty
   return (
     <div className={`
       relative flex flex-col items-center justify-center 
-      ${boxColor} border-4 ${borderColor} rounded-xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]
-      ${isMoney ? 'py-2 md:py-3' : 'py-1 md:py-2'}
+      pixel-stat-box ${boxColor}
+      ${isMoney ? 'py-1 md:py-1.5' : 'py-0.5 md:py-1'}
       ${className}
       w-full
     `}>
       {label && (
-        <div className="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-[-2px] md:mb-0">
+        <div className="text-slate-400 text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-[-2px]" style={{ textShadow: '1px 1px 0px rgba(0, 0, 0, 0.5)' }}>
           {label}
         </div>
       )}
       <div className={`
         font-vt323 font-bold leading-none 
         ${textColor} 
-        ${isMoney ? 'text-4xl md:text-5xl tracking-widest drop-shadow-[2px_2px_0_rgba(0,0,0,0.8)]' : 'text-3xl md:text-4xl drop-shadow-[2px_2px_0_rgba(0,0,0,0.5)]'}
-      `}>
+        ${isMoney ? 'text-2xl md:text-3xl tracking-widest' : 'text-xl md:text-2xl'}
+      `} style={{
+        textShadow: isMoney 
+          ? '2px 2px 0px rgba(0, 0, 0, 0.8)' 
+          : '2px 2px 0px rgba(0, 0, 0, 0.6)',
+      }}>
         {value}
-        {subValue && <span className="text-white/50 text-lg md:text-2xl ml-1 align-baseline font-normal">{subValue}</span>}
+        {subValue && <span className="text-white/50 text-sm md:text-lg ml-1 align-baseline font-normal" style={{ textShadow: '1px 1px 0px rgba(0, 0, 0, 0.5)' }}>{subValue}</span>}
       </div>
     </div>
   );

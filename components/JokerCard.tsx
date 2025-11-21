@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { JokerInstance, JokerDefinition } from '../types';
 import { JOKER_DEFINITIONS, COLORS } from '../constants';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface JokerCardProps {
   joker: JokerInstance | JokerDefinition;
@@ -9,7 +11,9 @@ interface JokerCardProps {
 }
 
 const JokerCard: React.FC<JokerCardProps> = ({ joker, inShop }) => {
+  const { t } = useLanguage();
   const [showInfo, setShowInfo] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   // Handle both Instance and Definition (Shop uses Definition)
   const defId = 'defId' in joker ? joker.defId : joker.id;
@@ -98,12 +102,21 @@ const JokerCard: React.FC<JokerCardProps> = ({ joker, inShop }) => {
     return cssStyle;
   }, [visualStyle]);
 
+  const handleClick = () => {
+    if (inShop) {
+      setShowInfo(!showInfo);
+    } else {
+      // 在牌桌上点击时显示详情模态框
+      setShowDetailModal(true);
+    }
+  };
+
   return (
+    <>
     <div 
-        onClick={() => setShowInfo(!showInfo)}
+        onClick={handleClick}
         className={`
             relative flex flex-col items-center justify-center text-center
-            border-4 
             shadow-[0_4px_0_rgba(0,0,0,0.5)]
             transition-all duration-150
             cursor-pointer
@@ -114,7 +127,6 @@ const JokerCard: React.FC<JokerCardProps> = ({ joker, inShop }) => {
             select-none
         `}
         style={{ 
-          borderColor: rarityColor, 
           ...bgStyle 
         }}
     >
@@ -182,6 +194,111 @@ const JokerCard: React.FC<JokerCardProps> = ({ joker, inShop }) => {
           </div>
       )}
     </div>
+
+    {/* 像素风格详情模态框 - 仅在牌桌上显示 */}
+    <AnimatePresence>
+      {showDetailModal && !inShop && (
+        <motion.div 
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          onClick={() => setShowDetailModal(false)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <motion.div 
+            className="relative w-[90vw] max-w-md bg-slate-900 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.8, opacity: 0 }}
+            transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
+          >
+          
+          {/* 背景纹理 */}
+          <div 
+            className="absolute inset-0 opacity-20 pointer-events-none"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='4' height='4' fill='%23ffffff'/%3E%3Crect x='0' y='0' width='2' height='2' fill='%23000000'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%23000000'/%3E%3C/svg%3E")`,
+              backgroundSize: '8px 8px',
+            }}
+          ></div>
+
+          {/* 关闭按钮 */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDetailModal(false);
+            }}
+            className="absolute top-2 right-2 w-8 h-8 bg-red-600 text-white font-bold text-xl flex items-center justify-center hover:bg-red-500 transition-colors z-50 cursor-pointer"
+            type="button"
+          >
+            ×
+          </button>
+
+          {/* 内容区域 */}
+          <div className="relative z-10 p-6">
+            {/* 标题区域 */}
+            <div className="mb-4 pb-4">
+              <div 
+                className="inline-block px-3 py-1 mb-2 text-white font-bold text-xs uppercase tracking-wider"
+                style={{ 
+                  backgroundColor: rarityColor,
+                  clipPath: 'polygon(0 2px, 2px 2px, 2px 0, calc(100% - 2px) 0, calc(100% - 2px) 2px, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 2px calc(100% - 2px), 0 calc(100% - 2px))',
+                }}
+              >
+                {t(`gallery.${def.rarity.toLowerCase()}`)}
+              </div>
+              <h2 
+                className="text-3xl md:text-4xl font-bold text-white uppercase tracking-wider mb-2"
+                style={{ 
+                  color: rarityColor,
+                  textShadow: '4px 4px 0px rgba(0,0,0,0.8), 0 0 10px rgba(0,0,0,0.5)',
+                  fontFamily: 'VT323, monospace',
+                }}
+              >
+                {def.name}
+              </h2>
+            </div>
+
+            {/* 卡片预览 */}
+            <div className="mb-6 flex justify-center">
+              <div 
+                className="relative w-32 h-48 sm:w-40 sm:h-60 shadow-[0_8px_0_rgba(0,0,0,0.8)]"
+                style={{
+                  ...bgStyle,
+                }}
+              >
+              </div>
+            </div>
+
+            {/* 描述区域 */}
+            <div className="bg-black/40 p-4 mb-4">
+              <div className="text-white text-base md:text-lg leading-relaxed font-vt323" style={{ textShadow: '2px 2px 0px rgba(0,0,0,0.8)' }}>
+                {def.description}
+              </div>
+            </div>
+
+            {/* 类型标签 */}
+            <div className="flex items-center gap-2">
+              <span className="text-white/60 text-sm uppercase tracking-wider font-vt323">{t('jokerDetails.type')}:</span>
+              <div 
+                className="px-3 py-1 bg-blue-600 text-white text-sm font-bold uppercase"
+                style={{
+                  clipPath: 'polygon(0 2px, 2px 2px, 2px 0, calc(100% - 2px) 0, calc(100% - 2px) 2px, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 2px calc(100% - 2px), 0 calc(100% - 2px))',
+                }}
+              >
+                {def.type === 'passive' ? t('jokerDetails.passive') : t('jokerDetails.onPlay')}
+              </div>
+            </div>
+
+           
+          </div>
+        </motion.div>
+      </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 };
 

@@ -86,7 +86,6 @@ export interface GameState {
   
   // UI State
   jokerMessage: string | null;
-  isThinking: boolean;
   lastHandName: string | null;
   lastHandScore: number;
   lastHandDetails?: {

@@ -3,6 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="screen-orientation" content="landscape" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Balatro-ish</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,6 +17,23 @@
         font-family: 'VT323', monospace;
         background-color: #1a1a1a;
         overflow: hidden; /* Prevent scroll on mobile */
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+      
+      html {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+      
+      #root {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
       }
       /* Custom Scrollbar */
       ::-webkit-scrollbar {
@@ -58,6 +79,87 @@
 
       .shadow-hard {
         box-shadow: 6px 6px 0px rgba(0,0,0,0.3);
+      }
+
+      /* Pixel Retro Button Style */
+      .pixel-button {
+        clip-path: polygon(
+          0 4px, 4px 4px, 4px 0,
+          calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+          100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+          4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+        );
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+        border: none;
+        box-shadow: 
+          0 0 0 2px rgba(0, 0, 0, 0.3),
+          0 0 0 4px rgba(255, 255, 255, 0.1),
+          inset 0 2px 0 rgba(255, 255, 255, 0.2),
+          inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+          4px 4px 0px rgba(0, 0, 0, 0.4);
+        transition: all 0.1s ease;
+      }
+
+      .pixel-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 
+          0 0 0 2px rgba(0, 0, 0, 0.3),
+          0 0 0 4px rgba(255, 255, 255, 0.15),
+          inset 0 2px 0 rgba(255, 255, 255, 0.25),
+          inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+          5px 5px 0px rgba(0, 0, 0, 0.4);
+      }
+
+      .pixel-button:active {
+        transform: translateY(2px);
+        box-shadow: 
+          0 0 0 2px rgba(0, 0, 0, 0.3),
+          0 0 0 4px rgba(255, 255, 255, 0.1),
+          inset 0 2px 0 rgba(0, 0, 0, 0.1),
+          inset 0 -2px 0 rgba(255, 255, 255, 0.1),
+          2px 2px 0px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Pixel Retro Stat Box Style */
+      .pixel-stat-box {
+        clip-path: polygon(
+          0 3px, 3px 3px, 3px 0,
+          calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px,
+          100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%,
+          3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px)
+        );
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+        border: none;
+        box-shadow: 
+          0 0 0 1px rgba(0, 0, 0, 0.4),
+          0 0 0 2px rgba(255, 255, 255, 0.08),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15),
+          inset 0 -1px 0 rgba(0, 0, 0, 0.3),
+          2px 2px 0px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Pixel Retro Info Box Style */
+      .pixel-info-box {
+        clip-path: polygon(
+          0 4px, 4px 4px, 4px 0,
+          calc(100% - 4px) 0, calc(100% - 4px) 4px, 100% 4px,
+          100% calc(100% - 4px), calc(100% - 4px) calc(100% - 4px), calc(100% - 4px) 100%,
+          4px 100%, 4px calc(100% - 4px), 0 calc(100% - 4px)
+        );
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+        border: none;
+        box-shadow: 
+          0 0 0 2px rgba(0, 0, 0, 0.4),
+          0 0 0 3px rgba(255, 255, 255, 0.1),
+          inset 0 2px 0 rgba(255, 255, 255, 0.2),
+          inset 0 -2px 0 rgba(0, 0, 0, 0.3),
+          3px 3px 0px rgba(0, 0, 0, 0.4);
       }
     </style>
   <script type="importmap">
