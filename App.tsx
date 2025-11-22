@@ -547,7 +547,6 @@ export default function App() {
                             color="red" 
                             onClick={handleDiscard} 
                             disabled={gameState.selectedCardIds.length === 0 || gameState.discardsRemaining === 0}
-                            subLabel={`-$${1}`} 
                         />
                     </div>
                     <div className="w-20 sm:w-24 md:w-36 h-5/6">
